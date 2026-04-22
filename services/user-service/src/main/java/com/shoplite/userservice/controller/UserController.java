@@ -1,5 +1,7 @@
 package com.shoplite.userservice.controller;
 
+import com.shoplite.userservice.dto.LoginRequest;
+import com.shoplite.userservice.dto.LoginResponse;
 import com.shoplite.userservice.dto.UserRegistrationRequest;
 import com.shoplite.userservice.dto.UserRegistrationResponse;
 import com.shoplite.userservice.service.UserService;
@@ -12,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/auth")
 public class UserController {
 
     private final UserService userService;
@@ -21,12 +23,18 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/users")
+    @PostMapping("/register")
     public ResponseEntity<UserRegistrationResponse> createUser(
             @Valid
             @RequestBody
             UserRegistrationRequest userRegistrationRequestDto){
         UserRegistrationResponse response = userService.createUser(userRegistrationRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest){
+        LoginResponse loginResponse = userService.login(loginRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
     }
 }

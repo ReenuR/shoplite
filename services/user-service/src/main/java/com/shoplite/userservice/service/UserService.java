@@ -1,11 +1,11 @@
 package com.shoplite.userservice.service;
 
-import com.shoplite.userservice.dto.AddressRequest;
-import com.shoplite.userservice.dto.UserRegistrationRequest;
-import com.shoplite.userservice.dto.UserRegistrationResponse;
+import com.shoplite.userservice.dto.*;
 import com.shoplite.userservice.entity.Address;
 import com.shoplite.userservice.entity.User;
 import com.shoplite.userservice.exception.DuplicateKeyException;
+import com.shoplite.userservice.exception.InvalidCredentialsException;
+import com.shoplite.userservice.exception.UserNotFoundException;
 import com.shoplite.userservice.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,10 +17,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder){
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtService jwtService1){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService1;
     }
 
     public UserRegistrationResponse createUser(UserRegistrationRequest userRegistrationRequestDto) {
@@ -56,5 +58,20 @@ public class UserService {
                     .email(savedUser.getEmail())
                     .build();
         return userResponseDto;
+    }
+
+    public LoginResponse login(LoginRequest loginRequest){
+
+        User user = userRepository.findByEmail(loginRequest.getEmail());
+        if(user==null){
+            throw new UserNotFoundException("User not found with email: " + loginRequest.getEmail());
+        }
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            throw new InvalidCredentialsException("Invalid password");
+        }
+        String jstToken = jwtService.generateToken(user.getUserId().toString(), user.getEmail());
+
+        return LoginResponse.builder().jwtToken(jstToken).build();
+
     }
 }
