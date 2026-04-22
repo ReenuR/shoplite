@@ -1,40 +1,29 @@
 package com.shoplite.userservice.controller;
 
-import com.shoplite.userservice.dto.LoginRequest;
-import com.shoplite.userservice.dto.LoginResponse;
-import com.shoplite.userservice.dto.UserRegistrationRequest;
-import com.shoplite.userservice.dto.UserRegistrationResponse;
+import com.shoplite.userservice.dto.UserProfileResponse;
 import com.shoplite.userservice.service.UserService;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/v1")
 public class UserController {
 
     private final UserService userService;
 
-    public UserController(UserService userService){
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<UserRegistrationResponse> createUser(
-            @Valid
-            @RequestBody
-            UserRegistrationRequest userRegistrationRequestDto){
-        UserRegistrationResponse response = userService.createUser(userRegistrationRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest){
-        LoginResponse loginResponse = userService.login(loginRequest);
-        return ResponseEntity.status(HttpStatus.OK).body(loginResponse);
+    @GetMapping("/users/{id}")
+    public ResponseEntity<UserProfileResponse> findUserById(@PathVariable UUID id){
+        UserProfileResponse userProfileResponse = userService.findUserById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(userProfileResponse);
     }
 }
