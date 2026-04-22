@@ -5,6 +5,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
 import java.util.HexFormat;
@@ -30,5 +31,24 @@ public class JwtService {
     private Key getSigningKey() {
         byte[] keyBytes = HexFormat.of().parseHex(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+    public boolean validateToken(String token){
+        try {
+            Jwts.parser()
+                    .verifyWith((SecretKey) getSigningKey())
+                    .build()
+                    .parseSignedClaims(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    public String extractUserId(String token){
+        return Jwts.parser()
+                .verifyWith((SecretKey) getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getSubject();
     }
 }
