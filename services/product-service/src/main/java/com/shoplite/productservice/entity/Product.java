@@ -28,7 +28,7 @@ public class Product {
     @Column(name = "product_name", nullable = false)
     private String productName;
 
-    @Column(name = "created_by", nullable = false)
+    @Column(name = "product_desc", nullable = false)
     private String productDesc;
 
     @Column(name = "product_selling_price", nullable = false)
