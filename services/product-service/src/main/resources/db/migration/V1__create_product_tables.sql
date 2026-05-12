@@ -15,7 +15,6 @@ product_selling_price DECIMAL(10,2),
 product_original_price DECIMAL(10,2)	,
 product_category_id UUID references categories(category_id),
 product_status varchar(20) check (product_status IN ('active', 'out_of_stock', 'discontinued', 'coming_soon')),
-created_by UUID not null,
 is_active BOOLEAN DEFAULT TRUE,
 created_at TIMESTAMP DEFAULT now(),
 updated_at TIMESTAMP

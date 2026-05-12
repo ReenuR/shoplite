@@ -1,10 +1,7 @@
 package com.shoplite.productservice.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -19,6 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "products")
+@Builder
 public class Product {
 
     @Id
@@ -45,10 +43,9 @@ public class Product {
     @Column(name = "product_status")
     private ProductStatusCode productStatus;
 
+    @Builder.Default
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductImage> images = new ArrayList<>();
-
-    private UUID createdBy;
 
     private boolean isActive;
     @CreationTimestamp
