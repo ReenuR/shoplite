@@ -75,10 +75,8 @@ public class UserService {
 
     public LoginResponse login(LoginRequest loginRequest) {
 
-        User user = userRepository.findByEmail(loginRequest.getEmail());
-        if (user == null) {
-            throw new UserNotFoundException("User not found with email: " + loginRequest.getEmail());
-        }
+        User user = userRepository.findByEmail(loginRequest.getEmail())
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + loginRequest.getEmail()));
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new InvalidCredentialsException("Invalid password");
         }
